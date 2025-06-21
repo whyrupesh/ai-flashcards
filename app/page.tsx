@@ -1,103 +1,166 @@
-import Image from "next/image";
+// app/page.tsx
+'use client';
+
+import { useState } from 'react';
+import Flashcard from '@/components/Flashcard';
+import { BackgroundLines } from '@/components/ui/background-lines';
+import { FaExternalLinkAlt } from "react-icons/fa";
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [topic, setTopic] = useState('');
+  const [flashcards, setFlashcards] = useState<any[]>([]);
+  const [index, setIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [difficulty, setDifficulty] = useState('Medium');
+  const [cardCount, setCardCount] = useState(10);
+  const [flipped, setFlipped] = useState(false); 
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleLeftClick = () => {
+    if (flipped === true) {
+      setFlipped(false);
+    }
+    if (index === 0) {
+      setIndex(flashcards.length - 1);
+    } else {
+      setIndex(i => Math.max(i - 1, 0));
+    }
+  };
+  const handleRightClick = () => {
+    if (flipped === true) {
+      setFlipped(false);
+    }
+    if (index === flashcards.length - 1) {
+      setIndex(0);
+    } else {
+      setIndex(i => Math.min(i + 1, flashcards.length - 1));
+    }
+  };
+
+
+  const fetchFlashcards = async () => {
+    if (!topic) return;
+    setLoading(true);
+    const res = await fetch('/api/flashcards', {
+      method: 'POST',
+      body: JSON.stringify({ topic, difficulty, cardCount }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    setFlashcards(data.flashcards);
+    setIndex(0);
+    setLoading(false);
+  };
+
+  return (
+    
+      <main className="min-h-screen text-white flex flex-col items-center p-8 gap-6 font-sans">
+        <BackgroundLines className="absolute inset-0 -z-10 pointer-events-none" children={undefined} />
+        <h1 className="text-4xl font-bold font-sans text-center">AI Flashcards Generator</h1>
+        <p className="text-lg text-zinc-400 mb-8 text-center max-w-2xl">
+          Generate flashcards on any topic using AI.
+        </p>
+
+        <div className="w-full max-w-md bg-zinc-900 p-6 rounded-xl shadow-lg border border-zinc-800 space-y-4">
+          <input
+            value={topic}
+            onChange={e => setTopic(e.target.value)}
+            placeholder="Enter a topic (e.g. DBMS, AI, OS)..."
+            className="w-full p-3 rounded bg-zinc-800 text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="block mb-1 text-sm text-zinc-400">Difficulty</label>
+          <select
+            value={difficulty}
+            onChange={e => setDifficulty(e.target.value)}
+            className="w-full p-2 bg-zinc-800 border border-zinc-700 text-white rounded"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <option>Easy</option>
+            <option>Medium</option>
+            <option>Hard</option>
+          </select>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="flex-1">
+          <label className="block mb-1 text-sm text-zinc-400">Cards</label>
+          <select
+            value={cardCount}
+            onChange={e => setCardCount(Number(e.target.value))}
+            className="w-full p-2 bg-zinc-800 border border-zinc-700 text-white rounded"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+      </div>
+
+      <button
+        onClick={fetchFlashcards}
+        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded shadow-md transition-all duration-300"
+      >
+        {loading ? 'Generating...' : 'Generate Flashcards'}
+      </button>
     </div>
+     
+
+      {flashcards.length > 0 && (
+        <div className="mt-10 flex flex-col items-center gap-6">
+          <Flashcard
+            question={flashcards[index].question}
+            answer={flashcards[index].answer}
+            flipped={flipped}
+            setFlipped={setFlipped}
+          />
+
+          <div className="flex gap-4">
+            <button
+              onClick={() => handleLeftClick()}
+              className="bg-zinc-800 hover:bg-zinc-700 text-white py-2 px-6 rounded shadow-md"
+            >
+              Left
+            </button>
+            <button
+              onClick={() => handleRightClick()}
+              className="bg-zinc-800 hover:bg-zinc-700 text-white py-2 px-6 rounded shadow-md"
+            >
+              Right
+            </button>
+          </div>
+
+          <p className="text-zinc-500 text-sm">{index + 1} / {flashcards.length}</p>
+        </div>
+      )}
+
+    <footer className="mt-10 text-zinc-500 text-sm text-center space-y-2">
+      <p className="flex items-center justify-center gap-1">
+        Made with <span className="text-red-500">❤️</span> by
+        <a
+          href="https://rupeshsingh.com/"
+          className="text-white flex items-center gap-1 hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Rupesh Singh <FaExternalLinkAlt size={12} />
+        </a>
+      </p>
+      <p className="flex items-center justify-center gap-1">
+        Star ⭐ this repo
+        <a
+          href="https://github.com/whyrupesh/flashcards-ai"
+          className="text-white flex items-center gap-1 hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          on GitHub <FaExternalLinkAlt size={12} />
+        </a>
+      </p>
+    </footer>
+
+    </main>
+
   );
 }
