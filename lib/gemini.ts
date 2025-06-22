@@ -1,6 +1,6 @@
 export async function getFlashcards(topic: string, difficulty: string, cardCount: number) {
   const prompt = `
-Generate ${cardCount} flashcards on the topic "${topic}" with ${difficulty.toLowerCase()} difficulty.Answer should be short max 5-7 words.
+Generate ${cardCount} flashcards on the topic "${topic}" with ${difficulty.toLowerCase()} difficulty. Answer should be short max 5-7 words.
 Each flashcard must follow this format exactly:
 Q1: <question>
 A1: <short answer>
@@ -36,10 +36,10 @@ A${cardCount}: ...
 
   return text
     .split(/\n(?=Q\d+:)/)
-    .map((entry) => {
+    .map((entry: { match: (arg0: RegExp) => string[]; }) => {
       const question = entry.match(/Q\d+:\s*(.+)/)?.[1]?.trim() ?? '';
       const answer = entry.match(/A\d+:\s*(.+)/)?.[1]?.trim() ?? '';
       return { question, answer };
     })
-    .filter((c) => c.question && c.answer);
+    .filter((c: { question: any; answer: any; }) => c.question && c.answer);
 }
