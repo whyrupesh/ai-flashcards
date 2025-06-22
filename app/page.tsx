@@ -150,7 +150,7 @@ export default function Home() {
       <p className="flex items-center justify-center gap-1">
         Star ⭐ this repo
         <a
-          href="https://github.com/whyrupesh/flashcards-ai"
+          href="https://github.com/whyrupesh/ai-flashcards"
           className="text-white flex items-center gap-1 hover:underline"
           target="_blank"
           rel="noopener noreferrer"
