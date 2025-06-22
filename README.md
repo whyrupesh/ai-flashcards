@@ -127,8 +127,8 @@ This project is licensed under the **MIT License**
 
 **Rupesh Kumar Singh**
 
-- GitHub: [@rupeshksingh](https://github.com/whyrupesh)  
-- Twitter: [@rupeshksingh](https://twitter.com/whyrupesh)  
+- GitHub: [@whyrupesh](https://github.com/whyrupesh)  
+- Twitter: [@whyrupesh](https://twitter.com/whyrupesh)  
 - Portfolio: [rupeshsingh.com](https://rupeshsingh.com)
 
 ---
